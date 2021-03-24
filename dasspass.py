@@ -35,7 +35,7 @@ import os
 
 ## - Global Data - ##
 # The standard seperation character.
-SEPCHAR = '$SEP$'
+SEPCHAR = " ; "
 
 # This string is the location of the user's profile.
 fileProfile = ''
@@ -83,7 +83,7 @@ def encrypt(unencryptedData):
 ##
 def decrypt(encryptedData):
     decryptedData = crypto_service.decrypt(encryptedData)
-    return decryptedData
+    return decryptedData.decode()
 
 ## testKey
 # Tests to see if the given passphrase for an existing profile was correct.
@@ -94,7 +94,7 @@ def testKey():
         byteFile = open(fileProfile, 'rb')
 
         try:
-            decrypt(byteFile.read())
+            test = decrypt(byteFile.read())
         except:
             print('Incorrect passphrase used for existing profile.')
             exit()
@@ -168,7 +168,7 @@ def getSalt():
     else:                               # Scenario 2: We couldn't find the salt file.
         salt = os.urandom(16)           #  We generate a new salt.
         byteFile = open(strSalt, 'wb')  #  Prepare to write the salt to a file.
-        byteFile.write(salt)         #  Writes the salt to a file.
+        byteFile.write(salt)            #  Writes the salt to a file.
 
     return salt                         # Returns the salt value, whether new or old
 
@@ -200,10 +200,30 @@ def loadProfile():
         lines = decrypt(byteFile.read())    # Reading in the bytes and decrypting them realtime.
         byteFile.close()
 
+        print(lines)
+
         for line in lines.splitlines():     # Splits the file by linefeed.
-            info = line.split(SEPCHAR)      # Splits each piece of information from a serice by the special character.
+            info = line.split(SEPCHAR)      # Splits each piece of information from a service by the special character.
             newService = clsService.service(info[0], info[1], info[2], info[3]) # Instantiating a new service object.
             services[info[0]] = newService  # Adds the name of the service as the key and the service object as the value in the services dictionary.
+
+
+## - Service Manipulation Routines - ##
+
+## addService
+# Adds a service and its information into the services dictionary.
+##
+def addService(name, user, pwd, note):
+    newService = clsService.service(name, user, pwd, note)  # Instantiate the new service object
+    services[name] = newService                             # Add the new service object to the dictionary with a key of the name of the service.
+    saveProfile()                                           # Save changes to profile.
+
+## removeService
+# Removes a given service.
+##
+def removeService(name):
+    services.pop(name)      # Removes the service from the dictionary.
+    saveProfile()           # Saves the changes.
 
 
 ## - Parser Routines - ##
@@ -217,7 +237,34 @@ def help():
 # Allows the user to add a service, including the username, password, and an optional note.
 ##
 def add(args):
-    print('Add Command')
+    if len(args) < 3:                           # Just checking to see the user entered 3 or more arguments when calling this command.
+        print('Invalid number of arguments.')
+    else:
+        if args[1] in services.keys():      # args[1] holds the name of the service to be added.
+            print('Service already exists. Please choose a different service name, or rename this service.')
+        else:
+            name = ''
+            user = ''
+            pwd = ''
+            note = ''
+
+            if len(args) == 3:                  # When the length of arguments is 3, this means the user wants to store a service and a username, but wants us to generate the password.
+                name = args[1]                  # Sets the name of the service equal to the given name.
+                user = args[2]                  # Sets the user of the service equal to the given username.
+                pwd = genPass()                 # Generates a random password.
+            elif len(args) == 4:                # When the length of arguments is 4, this means the user has set their own password, but chose not to give a note.
+                name = args[1]
+                user = args[2]
+                pwd = args[3]
+            else:                               # This just means that all arguments have been fulfilled. A note can take up several arguments due to everything being comma separated.
+                name = args[1]
+                user = args[2]
+                pwd = args[3]
+                for word in range(4, len(args)):
+                    note += word
+
+            addService(name, user, pwd, note)
+            saveProfile()
 
 ## remove
 # Allows the user to remove a service completely.
@@ -273,6 +320,16 @@ def setpwd(args):
 def setnote(args):
     print('SetNote')
 
+## list
+# Lists all of the services the user has in DassPass.
+##
+def list():
+    if not services:
+        print('No services found...')
+    else:
+        for service in sorted(services.keys()):
+            print(service)
+
 ## clear
 # Clears the terminal after determining which platform we're running on.
 ##
@@ -287,7 +344,6 @@ def clear():
 # Gives the user a clean way to clean up and exit the program.
 ##
 def exitDassPass():
-    saveProfile()           # Save anything we might have in case it somehow wasn't saved.
     services = None         # Clean our services out of memory.
     pyperclip.copy('')      # Clear the clipboard, which might be holding a password.
     clear()                 # Clear the screen in case anything private was printed beforehand.
@@ -331,10 +387,26 @@ def parseArgs(argString):
         blnIncognito = True
     elif command == 'incognito-off':
         blnIncognito = False
+    elif command == 'list':
+        if len(args) == 1:
+            list()
+        else:
+            print('list does not take additional arguments.')
+    elif command == 'help':
+        if len(args) == 1:
+            help()
+        else:
+            print('help does not take additional arguments.')
     elif command == 'clear':
-        clear()
+        if len(args) == 1:
+            clear()
+        else:
+            print('clear does not take additional arguments.')
     elif command == 'exit':
-        exitDassPass()
+        if len(args) == 1:
+            exitDassPass()
+        else:
+            print('exit does not take additional arguments')
     else:
         print('Unrecognized Command')
 
