@@ -264,13 +264,24 @@ def add(args):
                     note += word
 
             addService(name, user, pwd, note)
+            print(f'Added {name}')
             saveProfile()
 
 ## remove
 # Allows the user to remove a service completely.
 ##
 def remove(args):
-    print('Remove Command')
+    if len(args) != 2:
+        print('Invalid number of arguments')
+    else:
+        name = args[1]
+        if name in services:
+            if input(f'Are you sure you want to remove {name}? (y/N)').lower() == 'y':
+                removeService(name)
+            else:
+                print(f'Canceled removing {name}')
+        else:
+            print('Service does not exist')
 
 ## get 
 # Allows the user to get all information of a service.
