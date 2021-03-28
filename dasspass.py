@@ -230,10 +230,13 @@ def removeService(name):
 ## help
 # Prints the commands available to the user.
 ##
-def help():
-    print('Help Command')
+def help(args):
+    if len(args) == 1:
+        print('Help Command')
+    else:
+        print('help does not take arguments')
 
-## add 
+## add
 # Allows the user to add a service, including the username, password, and an optional note.
 ##
 def add(args):
@@ -263,7 +266,7 @@ def add(args):
                 for word in range(4, len(args)):
                     note += word
 
-            addService(name, user, pwd, note)
+            addService(name.lower(), user, pwd, note)
             print(f'Added {name}')
             saveProfile()
 
@@ -271,10 +274,9 @@ def add(args):
 # Allows the user to remove a service completely.
 ##
 def remove(args):
-    if len(args) != 2:
-        print('Invalid number of arguments')
-    else:
+    if len(args) == 2:
         name = args[1]
+
         if name in services:
             if input(f'Are you sure you want to remove {name}? (y/N)').lower() == 'y':
                 removeService(name)
@@ -282,13 +284,28 @@ def remove(args):
                 print(f'Canceled removing {name}')
         else:
             print('Service does not exist')
+    else:
+        print('Invalid number of arguments')
 
-## get 
+## get
 # Allows the user to get all information of a service.
 ##
 def get(args):
-    print('Get Command')
+    if len(args) == 2:
+        name = args[1]
 
+        if name in services:
+            global blnIncognito
+            if blnIncognito:
+                print("Username:", '*' * (len(services[name].getUser()) - 4) + services[name].getUser()[len(services[name].getUser()) - 4:])
+                print("Password:", '*' * (len(services[name].getPwd()) - 4) + services[name].getPwd()[len(services[name].getPwd()) - 4:])
+            else:
+                print(f'Username: {services[name].getUser}')
+                print(f'Password: {services[name].getPwd}')
+
+            print("Note:", services[name].getNote())
+    else:
+        print('Invalid number of arguments')
 ## getuser
 # Copies the username of a given service to the clipboard.
 ##
@@ -334,38 +351,47 @@ def setnote(args):
 ## list
 # Lists all of the services the user has in DassPass.
 ##
-def list():
-    if not services:
-        print('No services found...')
+def list(args):
+    if len(args) == 1:
+        if not services:
+            print('No services found...')
+        else:
+            for service in sorted(services.keys()):
+                print(service)
     else:
-        for service in sorted(services.keys()):
-            print(service)
+        print('list does not take arguments')
 
 ## clear
 # Clears the terminal after determining which platform we're running on.
 ##
-def clear():
-    if os.name == 'nt':         # We're running on Windows.
-        _ = os.system('cls')
-    else:                       # We're either running on Linux or Mac.
-        _ = os.system('clear')
-                                # I might have to write something for Unix (BSD) later...
+def clear(args):
+    if len(args) == 1:
+        if os.name == 'nt':         # We're running on Windows.
+            _ = os.system('cls')
+        else:                       # We're either running on Linux or Mac.
+            _ = os.system('clear')
+                                    # I might have to write something for Unix (BSD) later...
+    else:
+        print('clear does not take arguments')
 
 ## exit
 # Gives the user a clean way to clean up and exit the program.
 ##
-def exitDassPass():
-    services = None         # Clean our services out of memory.
-    pyperclip.copy('')      # Clear the clipboard, which might be holding a password.
-    clear()                 # Clear the screen in case anything private was printed beforehand.
-    exit()                  # Shut down the program.
+def exitDassPass(args):
+    if len(args) == 1:
+        services = None         # Clean our services out of memory.
+        pyperclip.copy('')      # Clear the clipboard, which might be holding a password.
+        clear([''])                 # Clear the screen in case anything private was printed beforehand.
+        exit()                  # Shut down the program.
+    else:
+        print('exit does not take arguments')
 
 ## parseArgs
 # Interprets the given argument/string from the user.
 # This is a very minimalist string parsing technique that will be improved later.
 # The idea is that we first split the words of the string given by the user into an array
-# via the String.split() function. Then we determine what the command is by comparing the 
-# first element in the array against our supported list of commands. If the 0th 
+# via the String.split() function. Then we determine what the command is by comparing the
+# first element in the array against our supported list of commands. If the 0th
 # element of the array is a recognized command, we send the array to the corresponding
 # routine above to be analyzed. Else, we just tell the user that the given command
 # is not supported.
@@ -376,13 +402,17 @@ def parseArgs(argString):
     # We're now going to look at what the first element of the argument array is and interpet the user's desire from that.
     command = args[0]
 
-    if command == 'add':
+    if command == 'help':
+        help(args)
+    elif command == 'add':
         add(args)
     elif command == 'remove':
         remove(args)
+    elif command == 'get':
+        get(args)
     elif command == 'getuser':
         getuser(args)
-    elif command == 'getpass':
+    elif command == 'getpwd':
         getpwd(args)
     elif command == 'getnote':
         getnote(args)
@@ -390,36 +420,18 @@ def parseArgs(argString):
         setname(args)
     elif command == 'setuser':
         setuser(args)
-    elif command == 'setpass':
-        setpass(args)
+    elif command == 'setpwd':
+        setpwd(args)
     elif command == 'setnote':
         setnote(args)
-    elif command == 'incognito-on':
-        blnIncognito = True
-    elif command == 'incognito-off':
-        blnIncognito = False
     elif command == 'list':
-        if len(args) == 1:
-            list()
-        else:
-            print('list does not take additional arguments.')
-    elif command == 'help':
-        if len(args) == 1:
-            help()
-        else:
-            print('help does not take additional arguments.')
+        list(args)
     elif command == 'clear':
-        if len(args) == 1:
-            clear()
-        else:
-            print('clear does not take additional arguments.')
+        clear(args)
     elif command == 'exit':
-        if len(args) == 1:
-            exitDassPass()
-        else:
-            print('exit does not take additional arguments')
+        exitDassPass(args)
     else:
-        print('Unrecognized Command')
+        print('Command Unrecognized')
 
 ## main
 # The following is an ordered list of what's happening here:
@@ -438,12 +450,16 @@ if __name__ == '__main__':
         initCrypto(passphrase)
         testKey()
         loadProfile()
-        clear()
+        clear([''])
 
         while True:
+            #if arrow key is pressed
+                #move cursor
+            #else
             parseArgs(input('DassPass > '))
+
     except KeyboardInterrupt:
-        exitDassPass()
+        exitDassPass([''])
     # I know throwing everything into a try-catch is bad practice, but the user can use a keyboard interrupt at any point during this program.
     # This use of try-catch is technically correct, and in python, it's not very costly when spoecifying the error to look out for.
     # This will be improved upon later.
