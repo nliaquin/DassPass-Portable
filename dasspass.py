@@ -278,14 +278,14 @@ def remove(args):
         name = args[1]
 
         if name in services:
-            if input(f'Are you sure you want to remove {name}? (y/N)').lower() == 'y':
+            if input(f'are you sure you want to remove {name}? (y/N)').lower() == 'y':
                 removeService(name)
             else:
-                print(f'Canceled removing {name}')
+                print(f'canceled removing {name}')
         else:
-            print('Service does not exist')
+            print('service not found')
     else:
-        print('Invalid number of arguments')
+        print('invalid number of arguments')
 
 ## get
 # Allows the user to get all information of a service.
@@ -297,32 +297,60 @@ def get(args):
         if name in services:
             global blnIncognito
             if blnIncognito:
-                print("Username:", '*' * (len(services[name].getUser()) - 4) + services[name].getUser()[len(services[name].getUser()) - 4:])
-                print("Password:", '*' * (len(services[name].getPwd()) - 4) + services[name].getPwd()[len(services[name].getPwd()) - 4:])
+                print("username:", '*' * (len(services[name].getUser()) - 4) + services[name].getUser()[len(services[name].getUser()) - 4:])
+                print("password:", '*' * (len(services[name].getPwd()) - 4) + services[name].getPwd()[len(services[name].getPwd()) - 4:])
             else:
-                print(f'Username: {services[name].getUser}')
-                print(f'Password: {services[name].getPwd}')
+                print(f'username: {services[name].getUser}')
+                print(f'password: {services[name].getPwd}')
 
-            print("Note:", services[name].getNote())
+            print("note:", services[name].getNote())
     else:
-        print('Invalid number of arguments')
+        print('invalid number of arguments')
+
 ## getuser
 # Copies the username of a given service to the clipboard.
 ##
 def getuser(args):
-    print('GetUser Command')
+    if len(args) == 2:
+        service = args[1]
+
+        if service in services:
+            pyperclip.copy(services[service].getUser())
+            print(f'username from {service} copied to clipboard')
+        else:
+            print(f'{service} not found')
+    else:
+        print('invalid number of arguments')
 
 ## getpwd
 # Copies the password of a given service to the clipboard.
 ##
 def getpwd(args):
-    print('GetPwd Command')
+    if len(args) == 2:
+        service = args[1]
+
+        if service in services:
+            pyperclip.copy(services[service].getPwd())
+            print(f'password from {service} copied to clipboard')
+        else:
+            print(f'{service} not found')
+    else:
+        print('invalid number of arguments')
 
 ## getnote
 # Copies the note of a given service to the clipboard.
 ##
 def getnote(args):
-    print('GetNote Command')
+    if len(args) == 2:
+        service = args[1]
+
+        if service in services:
+            pyperclip.copy(services[service].getNote())
+            print(f'note from {service} copied to clipboard')
+        else:
+            print(f'{service} not found')
+    else:
+        print('invalid number of arguments')
 
 ## setname
 # Allows the user to rename a service.
