@@ -292,65 +292,89 @@ def remove(args):
 ##
 def get(args):
     if len(args) == 2:
-        name = args[1]
+        # Given that the length of args is 2, the user has not specified which piece
+        # of information that want from a service, they just want the whole services
+        # and its information displayed.
+        service = args[1]
 
-        if name in services:
+        if service in services:
             global blnIncognito
             if blnIncognito:
-                print("username:", '*' * (len(services[name].getUser()) - 4) + services[name].getUser()[len(services[name].getUser()) - 4:])
-                print("password:", '*' * (len(services[name].getPwd()) - 4) + services[name].getPwd()[len(services[name].getPwd()) - 4:])
+                print("username:", '*' * (len(services[service].getUser()) - 4) + services[service].getUser()[len(services[service].getUser()) - 4:])
+                print("password:", '*' * (len(services[service].getPwd()) - 4) + services[service].getPwd()[len(services[service].getPwd()) - 4:])
             else:
-                print(f'username: {services[name].getUser}')
-                print(f'password: {services[name].getPwd}')
+                print(f'username: {services[service].getUser}')
+                print(f'password: {services[service].getPwd}')
 
-            print("note:", services[name].getNote())
+            print(f'note: {services[service].getNote()}')
+    elif len(args) == 3:
+        service = args[1]
+        option = args[2]
+        # To explain what is happening here, the option is which piece of information
+        # the user has specified. If this string turns out to be 'user', the username
+        # of the service will be copied, if it is 'pwd', the password is copied, etc.
+        if service in services:
+            if option == 'user':
+                pyperclip.copy(services[service].getUser())
+                print(f'username from {service} copied to clipboard')
+            elif option == 'pwd':
+                pyperclip.copy(services[service].getPwd())
+                print(f'password from {service} copied to clipboard')
+            elif option == 'note':
+                pyperclip.copy(services[service].getNote())
+                print(f'note from {service} copied to clipboard')
+            else:
+                print(f'{option} not valid')
+        else:
+            print(f'note: {services[service].getNote()}')
     else:
         print('invalid number of arguments')
 
 ## getuser
 # Copies the username of a given service to the clipboard.
 ##
-def getuser(args):
-    if len(args) == 2:
-        service = args[1]
+#if getuser(args):
+#   if len(args) == 2:
+#        service = args[1]
+#
+#        if service in services:
+#            pyperclip.copy(services[service].getUser())
+#            print(f'username from {service} copied to clipboard')
+#        else:
+#            print(f'{service} not found')
+#    else:
+#        print('invalid number of arguments')
 
-        if service in services:
-            pyperclip.copy(services[service].getUser())
-            print(f'username from {service} copied to clipboard')
-        else:
-            print(f'{service} not found')
-    else:
-        print('invalid number of arguments')
 
 ## getpwd
 # Copies the password of a given service to the clipboard.
 ##
-def getpwd(args):
-    if len(args) == 2:
-        service = args[1]
-
-        if service in services:
-            pyperclip.copy(services[service].getPwd())
-            print(f'password from {service} copied to clipboard')
-        else:
-            print(f'{service} not found')
-    else:
-        print('invalid number of arguments')
+#def getpwd(args):
+#    if len(args) == 2:
+#        service = args[1]
+#
+#        if service in services:
+#            pyperclip.copy(services[service].getPwd())
+#            print(f'password from {service} copied to clipboard')
+#        else:
+#            print(f'{service} not found')
+#    else:
+#        print('invalid number of arguments')
 
 ## getnote
 # Copies the note of a given service to the clipboard.
 ##
-def getnote(args):
-    if len(args) == 2:
-        service = args[1]
-
-        if service in services:
-            pyperclip.copy(services[service].getNote())
-            print(f'note from {service} copied to clipboard')
-        else:
-            print(f'{service} not found')
-    else:
-        print('invalid number of arguments')
+#def getnote(args):
+#    if len(args) == 2:
+#        service = args[1]
+#
+#        if service in services:
+#            pyperclip.copy(services[service].getNote())
+#            print(f'note from {service} copied to clipboard')
+#        else:
+#            print(f'{service} not found')
+#    else:
+#        print('invalid number of arguments')
 
 ## setname
 # Allows the user to rename a service.
