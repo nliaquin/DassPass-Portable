@@ -288,7 +288,7 @@ def remove(args):
         print('invalid number of arguments')
 
 ## get
-# Allows the user to get all information of a service.
+#
 ##
 def get(args):
     if len(args) == 2:
@@ -330,75 +330,37 @@ def get(args):
     else:
         print('invalid number of arguments')
 
-## getuser
-# Copies the username of a given service to the clipboard.
-##
-#if getuser(args):
-#   if len(args) == 2:
-#        service = args[1]
+## set
 #
-#        if service in services:
-#            pyperclip.copy(services[service].getUser())
-#            print(f'username from {service} copied to clipboard')
-#        else:
-#            print(f'{service} not found')
-#    else:
-#        print('invalid number of arguments')
-
-
-## getpwd
-# Copies the password of a given service to the clipboard.
 ##
-#def getpwd(args):
-#    if len(args) == 2:
-#        service = args[1]
-#
-#        if service in services:
-#            pyperclip.copy(services[service].getPwd())
-#            print(f'password from {service} copied to clipboard')
-#        else:
-#            print(f'{service} not found')
-#    else:
-#        print('invalid number of arguments')
+def set(args):
+    if len(args) == 4:
+        service = args[1]
+        option = args[2]
+        replacement = args[3]
 
-## getnote
-# Copies the note of a given service to the clipboard.
-##
-#def getnote(args):
-#    if len(args) == 2:
-#        service = args[1]
-#
-#        if service in services:
-#            pyperclip.copy(services[service].getNote())
-#            print(f'note from {service} copied to clipboard')
-#        else:
-#            print(f'{service} not found')
-#    else:
-#        print('invalid number of arguments')
+        if service in services:
+            if option == 'name':
+                services[service].setName(replacement) # This changes the name in the object
+                services[replacement] = services.pop(service) # This changes the key to the object
+                print(f'{service} name changed')
+            elif option == 'user':
+                services[service].setUser(replacement)
+                print(f'{service} username changed')
+            elif option == 'pwd':
+                services[service].setPwd(replacement)
+                print(f'{service} password changed')
+            elif option == 'note':
+                services[service].setNote(replacement)
+                print(f'{service} note changed')
+            else:
+                print(f'{option} not recognized')
 
-## setname
-# Allows the user to rename a service.
-##
-def setname(args):
-    print('SetName Command')
-
-## setuser
-# Allows the user to change the username of a given service.
-##
-def setuser(args):
-    print('SetUser Command')
-
-## setpwd
-# Allows the user to chane the password of a given service.
-##
-def setpwd(args):
-    print('SetPwd Command')
-
-## setnote
-# Allows the user to set the note of a given service.
-##
-def setnote(args):
-    print('SetNote')
+            saveProfile()
+        else:
+            print(f'{service} not found')
+    else:
+        print('invalid number of arguments')
 
 ## list
 # Lists all of the services the user has in DassPass.
@@ -462,20 +424,8 @@ def parseArgs(argString):
         remove(args)
     elif command == 'get':
         get(args)
-    elif command == 'getuser':
-        getuser(args)
-    elif command == 'getpwd':
-        getpwd(args)
-    elif command == 'getnote':
-        getnote(args)
-    elif command == 'setname':
-        setname(args)
-    elif command == 'setuser':
-        setuser(args)
-    elif command == 'setpwd':
-        setpwd(args)
-    elif command == 'setnote':
-        setnote(args)
+    elif command == 'set':
+        set(args)
     elif command == 'list':
         list(args)
     elif command == 'clear':
