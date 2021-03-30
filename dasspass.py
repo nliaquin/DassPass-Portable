@@ -28,6 +28,7 @@ from cryptography.fernet import Fernet
 from objects import clsService
 from getpass import getpass
 import pyperclip
+import readline
 import pathlib
 import base64
 import os
@@ -296,12 +297,12 @@ def get(args):
         service = args[1]
 
         if service in services:
+            print(f'username: {services[service].getUser}')
+
             global blnIncognito
             if blnIncognito:
-                print("username:", '*' * (len(services[service].getUser()) - 4) + services[service].getUser()[len(services[service].getUser()) - 4:])
                 print("password:", '*' * (len(services[service].getPwd()) - 4) + services[service].getPwd()[len(services[service].getPwd()) - 4:])
             else:
-                print(f'username: {services[service].getUser}')
                 print(f'password: {services[service].getPwd}')
 
             print(f'note: {services[service].getNote()}')
@@ -471,9 +472,6 @@ if __name__ == '__main__':
         clear([''])
 
         while True:
-            #if arrow key is pressed
-                #move cursor
-            #else
             parseArgs(input('DassPass > '))
 
     except KeyboardInterrupt:
