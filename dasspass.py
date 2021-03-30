@@ -35,7 +35,7 @@ import os
 
 ## - Global Data - ##
 # The standard seperation character.
-SEPCHAR = " ; "
+SEPCHAR = '$SEP$'
 
 # This string is the location of the user's profile.
 fileProfile = ''
@@ -83,7 +83,7 @@ def encrypt(unencryptedData):
 ##
 def decrypt(encryptedData):
     decryptedData = crypto_service.decrypt(encryptedData)
-    return decryptedData.decode()
+    return decryptedData
 
 ## testKey
 # Tests to see if the given passphrase for an existing profile was correct.
@@ -94,7 +94,7 @@ def testKey():
         byteFile = open(fileProfile, 'rb')
 
         try:
-            test = decrypt(byteFile.read())
+            decrypt(byteFile.read())
         except:
             print('Incorrect passphrase used for existing profile.')
             exit()
@@ -115,7 +115,7 @@ SYMBOLS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>',
 
 COMBINED_LIST = DIGITS + UPCASE_CHARACTERS + LOCASE_CHARACTERS + SYMBOLS
 
-def genString():
+def genPass():
     rand_digit = random.choice(DIGITS)
     rand_upper = random.choice(UPCASE_CHARACTERS)
     rand_lower = random.choice(LOCASE_CHARACTERS)
@@ -168,7 +168,7 @@ def getSalt():
     else:                               # Scenario 2: We couldn't find the salt file.
         salt = os.urandom(16)           #  We generate a new salt.
         byteFile = open(strSalt, 'wb')  #  Prepare to write the salt to a file.
-        byteFile.write(salt)            #  Writes the salt to a file.
+        byteFile.write(salt)         #  Writes the salt to a file.
 
     return salt                         # Returns the salt value, whether new or old
 
@@ -200,227 +200,105 @@ def loadProfile():
         lines = decrypt(byteFile.read())    # Reading in the bytes and decrypting them realtime.
         byteFile.close()
 
-        print(lines)
-
         for line in lines.splitlines():     # Splits the file by linefeed.
-            info = line.split(SEPCHAR)      # Splits each piece of information from a service by the special character.
+            info = line.split(SEPCHAR)      # Splits each piece of information from a serice by the special character.
             newService = clsService.service(info[0], info[1], info[2], info[3]) # Instantiating a new service object.
             services[info[0]] = newService  # Adds the name of the service as the key and the service object as the value in the services dictionary.
 
-
-## - Service Manipulation Routines - ##
-
-## addService
-# Adds a given service to the services dictionary.
-##
-def addService(name, username, password, note):
-    newService = clsService.service(name, username, password, note)
-    services[name] = newService
-    saveProfile()
-
-## removeService
-# Removes a given service from the services dictionary.
-##
-def removeService(service):
-    services.pop(service)
-    saveProfile()
 
 ## - Parser Routines - ##
 ## help
 # Prints the commands available to the user.
 ##
-def help(args):
-    if len(args) == 1:
-        print('Help Command')
-    else:
-        print('help does not take arguments')
+def help():
+    print('Help Command')
 
-## add
+## add 
 # Allows the user to add a service, including the username, password, and an optional note.
 ##
 def add(args):
-    if len(args) < 3:                           # Just checking to see the user entered 3 or more arguments when calling this command.
-        print('Invalid number of arguments.')
-    else:
-        if args[1] in services.keys():      # args[1] holds the name of the service to be added.
-            print('Service already exists. Please choose a different service name, or rename this service.')
-        else:
-            name = ''
-            user = ''
-            pwd = ''
-            note = ''
-
-            if len(args) == 3:                  # When the length of arguments is 3, this means the user wants to store a service and a username, but wants us to generate the password.
-                name = args[1]                  # Sets the name of the service equal to the given name.
-                user = args[2]                  # Sets the user of the service equal to the given username.
-                pwd = genString()               # Generates a random password.
-            elif len(args) == 4:                # When the length of arguments is 4, this means the user has set their own password, but chose not to give a note.
-                name = args[1]
-                user = args[2]
-                pwd = args[3]
-            else:                               # This just means that all arguments have been fulfilled. A note can take up several arguments due to everything being comma separated.
-                name = args[1]
-                user = args[2]
-                pwd = args[3]
-                for word in range(4, len(args)):
-                    note += word
-
-            addService(name.lower(), user, pwd, note) # All service names must be lowercase, that is my only formatting standard for clsServices
-            print(f'Added {name}')
-            saveProfile()
+    print('Add Command')
 
 ## remove
 # Allows the user to remove a service completely.
 ##
 def remove(args):
-    if len(args) == 2:
-        service = args[1]
+    print('Remove Command')
 
-        if service in services:
-            if input(f'are you sure you want to remove {service}? (y/N)').lower() == 'y':
-                removeService(service)
-            else:
-                print(f'canceled removing {service}')
-        else:
-            print('service not found')
-    else:
-        print('invalid number of arguments')
-
-## get
-#
+## get 
+# Allows the user to get all information of a service.
 ##
 def get(args):
-    if len(args) == 2:
-        # Given that the length of args is 2, the user has not specified which piece
-        # of information that want from a service, they just want the whole services
-        # and its information displayed.
-        service = args[1]
+    print('Get Command')
 
-        if service in services:
-            global blnIncognito
-            if blnIncognito:
-                print("username:", '*' * (len(services[service].getUser()) - 4) + services[service].getUser()[len(services[service].getUser()) - 4:])
-                print("password:", '*' * (len(services[service].getPwd()) - 4) + services[service].getPwd()[len(services[service].getPwd()) - 4:])
-            else:
-                print(f'username: {services[service].getUser}')
-                print(f'password: {services[service].getPwd}')
-
-            print(f'note: {services[service].getNote()}')
-    elif len(args) == 3:
-        service = args[1]
-        option = args[2]
-        # To explain what is happening here, the option is which piece of information
-        # the user has specified. If this string turns out to be 'user', the username
-        # of the service will be copied, if it is 'pwd', the password is copied, etc.
-        if service in services:
-            if option == 'user':
-                pyperclip.copy(services[service].getUser())
-                print(f'username from {service} copied to clipboard')
-            elif option == 'pwd':
-                pyperclip.copy(services[service].getPwd())
-                print(f'password from {service} copied to clipboard')
-            elif option == 'note':
-                pyperclip.copy(services[service].getNote())
-                print(f'note from {service} copied to clipboard')
-            else:
-                print(f'{option} not valid')
-        else:
-            print(f'note: {services[service].getNote()}')
-    else:
-        print('invalid number of arguments')
-
-## set
-#
+## getuser
+# Copies the username of a given service to the clipboard.
 ##
-def set(args):
-    if len(args) == 4:
-        service = args[1]
-        option = args[2]
-        replacement = args[3]
+def getuser(args):
+    print('GetUser Command')
 
-        if service in services:
-            if option == 'name':
-                services[service].setName(replacement) # This changes the name in the object
-                services[replacement] = services.pop(service) # This changes the key to the object
-                print(f'{service} name changed')
-            elif option == 'user':
-                services[service].setUser(replacement)
-                print(f'{service} username changed')
-            elif option == 'pwd':
-                services[service].setPwd(replacement)
-                print(f'{service} password changed')
-            elif option == 'note':
-                services[service].setNote(replacement)
-                print(f'{service} note changed')
-            else:
-                print(f'{option} not recognized')
-
-            saveProfile()
-        else:
-            print(f'{service} not found')
-    else:
-        print('invalid number of arguments')
-
-## genpass
-# Sets a new password for a given service automatically.
+## getpwd
+# Copies the password of a given service to the clipboard.
 ##
-def genpass(args):
-    if len(args) == 2:
-        service = args[1]
+def getpwd(args):
+    print('GetPwd Command')
 
-        if service in services:
-            newPwd = genString()
-            services[service].setPwd(newPwd)
-            print(f'new password generated for {service} automatically')
-        else:
-            print(f'{service} not found')
-    else:
-        print('invalid number of arguments')
-
-## list
-# Lists all of the services the user has in DassPass.
+## getnote
+# Copies the note of a given service to the clipboard.
 ##
-def list(args):
-    if len(args) == 1:
-        if not services:
-            print('No services found...')
-        else:
-            for service in sorted(services.keys()):
-                print(service)
-    else:
-        print('list does not take arguments')
+def getnote(args):
+    print('GetNote Command')
+
+## setname
+# Allows the user to rename a service.
+##
+def setname(args):
+    print('SetName Command')
+
+## setuser
+# Allows the user to change the username of a given service.
+##
+def setuser(args):
+    print('SetUser Command')
+
+## setpwd
+# Allows the user to chane the password of a given service.
+##
+def setpwd(args):
+    print('SetPwd Command')
+
+## setnote
+# Allows the user to set the note of a given service.
+##
+def setnote(args):
+    print('SetNote')
 
 ## clear
 # Clears the terminal after determining which platform we're running on.
 ##
-def clear(args):
-    if len(args) == 1:
-        if os.name == 'nt':         # We're running on Windows.
-            _ = os.system('cls')
-        else:                       # We're either running on Linux or Mac.
-            _ = os.system('clear')
-                                    # I might have to write something for Unix (BSD) later...
-    else:
-        print('clear does not take arguments')
+def clear():
+    if os.name == 'nt':         # We're running on Windows.
+        _ = os.system('cls')
+    else:                       # We're either running on Linux or Mac.
+        _ = os.system('clear')
+                                # I might have to write something for Unix (BSD) later...
 
 ## exit
 # Gives the user a clean way to clean up and exit the program.
 ##
-def exitDassPass(args):
-    if len(args) == 1:
-        services = None         # Clean our services out of memory.
-        pyperclip.copy('')      # Clear the clipboard, which might be holding a password.
-        clear([''])                 # Clear the screen in case anything private was printed beforehand.
-        exit()                  # Shut down the program.
-    else:
-        print('exit does not take arguments')
+def exitDassPass():
+    saveProfile()           # Save anything we might have in case it somehow wasn't saved.
+    services = None         # Clean our services out of memory.
+    pyperclip.copy('')      # Clear the clipboard, which might be holding a password.
+    clear()                 # Clear the screen in case anything private was printed beforehand.
+    exit()                  # Shut down the program.
 
 ## parseArgs
 # Interprets the given argument/string from the user.
 # This is a very minimalist string parsing technique that will be improved later.
 # The idea is that we first split the words of the string given by the user into an array
-# via the String.split() function. Then we determine what the command is by comparing the
-# first element in the array against our supported list of commands. If the 0th
+# via the String.split() function. Then we determine what the command is by comparing the 
+# first element in the array against our supported list of commands. If the 0th 
 # element of the array is a recognized command, we send the array to the corresponding
 # routine above to be analyzed. Else, we just tell the user that the given command
 # is not supported.
@@ -431,26 +309,34 @@ def parseArgs(argString):
     # We're now going to look at what the first element of the argument array is and interpet the user's desire from that.
     command = args[0]
 
-    if command == 'help':
-        help(args)
-    elif command == 'add':
+    if command == 'add':
         add(args)
     elif command == 'remove':
         remove(args)
-    elif command == 'get':
-        get(args)
-    elif command == 'set':
-        set(args)
-    elif command == 'genpass':
-        genpass(args)
-    elif command == 'list':
-        list(args)
+    elif command == 'getuser':
+        getuser(args)
+    elif command == 'getpass':
+        getpwd(args)
+    elif command == 'getnote':
+        getnote(args)
+    elif command == 'setname':
+        setname(args)
+    elif command == 'setuser':
+        setuser(args)
+    elif command == 'setpass':
+        setpass(args)
+    elif command == 'setnote':
+        setnote(args)
+    elif command == 'incognito-on':
+        blnIncognito = True
+    elif command == 'incognito-off':
+        blnIncognito = False
     elif command == 'clear':
-        clear(args)
+        clear()
     elif command == 'exit':
-        exitDassPass(args)
+        exitDassPass()
     else:
-        print('Command Unrecognized')
+        print('Unrecognized Command')
 
 ## main
 # The following is an ordered list of what's happening here:
@@ -469,16 +355,12 @@ if __name__ == '__main__':
         initCrypto(passphrase)
         testKey()
         loadProfile()
-        clear([''])
+        clear()
 
         while True:
-            #if arrow key is pressed
-                #move cursor
-            #else
             parseArgs(input('DassPass > '))
-
     except KeyboardInterrupt:
-        exitDassPass([''])
+        exitDassPass()
     # I know throwing everything into a try-catch is bad practice, but the user can use a keyboard interrupt at any point during this program.
     # This use of try-catch is technically correct, and in python, it's not very costly when spoecifying the error to look out for.
     # This will be improved upon later.
