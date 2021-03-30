@@ -225,14 +225,14 @@ def add(args):
 def remove(args):
     print('Remove Command')
 
-## get 
-# Allows the user to get all information of a service.
+## get
+# Contains all getter routines.
 ##
 def get(args):
     print('Get Command')
 
-## getuser
-# Copies the username of a given service to the clipboard.
+## set
+# Contains all setter routines.
 ##
 def getuser(args):
     print('GetUser Command')
