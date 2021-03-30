@@ -297,7 +297,7 @@ def get(args):
         service = args[1]
 
         if service in services:
-            print(f'username: {services[service].getUser}')
+            print(f'username: {services[service].getUser()}')
 
             global blnIncognito
             if blnIncognito:
@@ -306,6 +306,8 @@ def get(args):
                 print(f'password: {services[service].getPwd}')
 
             print(f'note: {services[service].getNote()}')
+        else:
+            print(f'{service} not found')
     elif len(args) == 3:
         service = args[1]
         option = args[2]
