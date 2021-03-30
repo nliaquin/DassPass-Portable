@@ -287,7 +287,7 @@ def remove(args):
         print('invalid number of arguments')
 
 ## get
-#
+# Contains all getter routines.
 ##
 def get(args):
     if len(args) == 2:
@@ -330,7 +330,7 @@ def get(args):
         print('invalid number of arguments')
 
 ## set
-#
+# Contains all setter routines.
 ##
 def set(args):
     if len(args) == 4:
