@@ -303,7 +303,7 @@ def get(args):
             if blnIncognito:
                 print("password:", '*' * (len(services[service].getPwd()) - 4) + services[service].getPwd()[len(services[service].getPwd()) - 4:])
             else:
-                print(f'password: {services[service].getPwd}')
+                print(f'password: {services[service].getPwd()}')
 
             print(f'note: {services[service].getNote()}')
         else:
@@ -379,6 +379,25 @@ def genpass(args):
     else:
         print('invalid number of arguments')
 
+## incog
+# Interprets whether the user wants incognito on or off
+##
+def incog(args):
+    if len(args) == 2:
+        switch = args[1]
+        global blnIncognito
+
+        if switch == 'off':
+            blnIncognito = False
+            print('incognito turned off')
+        elif switch == 'on':
+            blnIncognito = True
+            print('incognito turned on')
+        else:
+            print(f'{switch} is not a valid option')
+    else:
+        print('incognito only takes on or off as an argument')
+
 ## list
 # Lists all of the services the user has in DassPass.
 ##
@@ -445,6 +464,8 @@ def parseArgs(argString):
         set(args)
     elif command == 'genpass':
         genpass(args)
+    elif command == 'incognito':
+        incog(args)
     elif command == 'list':
         list(args)
     elif command == 'clear':
