@@ -115,7 +115,7 @@ SYMBOLS = ['@', '#', '$', '%', '=', ':', '?', '.', '/', '|', '~', '>',
 
 COMBINED_LIST = DIGITS + UPCASE_CHARACTERS + LOCASE_CHARACTERS + SYMBOLS
 
-def genPass():
+def genString():
     rand_digit = random.choice(DIGITS)
     rand_upper = random.choice(UPCASE_CHARACTERS)
     rand_lower = random.choice(LOCASE_CHARACTERS)
@@ -211,20 +211,19 @@ def loadProfile():
 ## - Service Manipulation Routines - ##
 
 ## addService
-# Adds a service and its information into the services dictionary.
+# Adds a given service to the services dictionary.
 ##
-def addService(name, user, pwd, note):
-    newService = clsService.service(name, user, pwd, note)  # Instantiate the new service object
-    services[name] = newService                             # Add the new service object to the dictionary with a key of the name of the service.
-    saveProfile()                                           # Save changes to profile.
+def addService(name, username, password, note):
+    newService = clsService.service(name, username, password, note)
+    services[name] = newService
+    saveProfile()
 
 ## removeService
-# Removes a given service.
+# Removes a given service from the services dictionary.
 ##
-def removeService(name):
-    services.pop(name)      # Removes the service from the dictionary.
-    saveProfile()           # Saves the changes.
-
+def removeService(service):
+    services.pop(service)
+    saveProfile()
 
 ## - Parser Routines - ##
 ## help
@@ -254,7 +253,7 @@ def add(args):
             if len(args) == 3:                  # When the length of arguments is 3, this means the user wants to store a service and a username, but wants us to generate the password.
                 name = args[1]                  # Sets the name of the service equal to the given name.
                 user = args[2]                  # Sets the user of the service equal to the given username.
-                pwd = genPass()                 # Generates a random password.
+                pwd = genString()               # Generates a random password.
             elif len(args) == 4:                # When the length of arguments is 4, this means the user has set their own password, but chose not to give a note.
                 name = args[1]
                 user = args[2]
@@ -266,7 +265,7 @@ def add(args):
                 for word in range(4, len(args)):
                     note += word
 
-            addService(name.lower(), user, pwd, note)
+            addService(name.lower(), user, pwd, note) # All service names must be lowercase, that is my only formatting standard for clsServices
             print(f'Added {name}')
             saveProfile()
 
@@ -275,13 +274,13 @@ def add(args):
 ##
 def remove(args):
     if len(args) == 2:
-        name = args[1]
+        service = args[1]
 
-        if name in services:
-            if input(f'are you sure you want to remove {name}? (y/N)').lower() == 'y':
-                removeService(name)
+        if service in services:
+            if input(f'are you sure you want to remove {service}? (y/N)').lower() == 'y':
+                removeService(service)
             else:
-                print(f'canceled removing {name}')
+                print(f'canceled removing {service}')
         else:
             print('service not found')
     else:
@@ -362,6 +361,22 @@ def set(args):
     else:
         print('invalid number of arguments')
 
+## genpass
+# Sets a new password for a given service automatically.
+##
+def genpass(args):
+    if len(args) == 2:
+        service = args[1]
+
+        if service in services:
+            newPwd = genString()
+            services[service].setPwd(newPwd)
+            print(f'new password generated for {service} automatically')
+        else:
+            print(f'{service} not found')
+    else:
+        print('invalid number of arguments')
+
 ## list
 # Lists all of the services the user has in DassPass.
 ##
@@ -426,6 +441,8 @@ def parseArgs(argString):
         get(args)
     elif command == 'set':
         set(args)
+    elif command == 'genpass':
+        genpass(args)
     elif command == 'list':
         list(args)
     elif command == 'clear':
