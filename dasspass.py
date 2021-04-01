@@ -335,7 +335,7 @@ def get(args):
 # Contains all setter routines.
 ##
 def set(args):
-    if len(args) == 4:
+    if len(args) >= 4:
         service = args[1]
         option = args[2]
         replacement = args[3]
@@ -352,7 +352,12 @@ def set(args):
                 services[service].setPwd(replacement)
                 print(f'{service} password changed')
             elif option == 'note':
-                services[service].setNote(replacement)
+                note = ''
+
+                for word in range(3, len(args)):
+                    note += args[word] + ' '
+
+                services[service].setNote(note)
                 print(f'{service} note changed')
             else:
                 print(f'{option} not recognized')
