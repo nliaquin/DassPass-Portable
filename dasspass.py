@@ -232,7 +232,9 @@ def removeService(service):
 ##
 def help(args):
     if len(args) == 1:
-        print('Help Command')
+        print("""
+              
+              """)
     else:
         print('help does not take arguments')
 
@@ -411,8 +413,11 @@ def list(args):
         if not services:
             print('No services found...')
         else:
+            i = 1
+
             for service in sorted(services.keys()):
-                print(service)
+                print(i, service)
+                i += 1
     else:
         print('list does not take arguments')
 
