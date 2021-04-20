@@ -444,6 +444,7 @@ def genpass(args):
         if service in services:
             newPwd = genString()
             services[service].setPwd(newPwd)
+            saveProfile()
             print(f'new password generated for {service} automatically')
         else:
             print(f'{service} not found')
