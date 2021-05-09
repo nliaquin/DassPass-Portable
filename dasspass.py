@@ -166,6 +166,7 @@ def cleanseStrings(args):
             if len(note) != 0:
                 if note[-1] == ' ':
                     service.setNote(note[:-1])
+        saveProfile()
     else:
         print('cleanse does not take arguments')
 
