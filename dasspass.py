@@ -470,7 +470,7 @@ def get(args):
             else:
                 print(f'{option} not valid')
         else:
-            print(f'note: {services[service].getNote()}')
+            print(f'{service} not found')
     else:
         print('invalid number of arguments')
 
