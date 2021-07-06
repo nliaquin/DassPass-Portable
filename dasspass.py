@@ -231,7 +231,7 @@ def saveProfile():
     for key in services:
         lines += services[key].getName() + SEPCHAR + services[key].getUser() + SEPCHAR + \
             services[key].getPwd() + SEPCHAR + \
-            services[key].getNote() + SEPCHAR + ' \n'
+            services[key].getNote() + SEPCHAR + '\n' ## removed a space before \n (7/5/21)
 
     # Gets the byte file ready for writing to.
     byteFile = open(fileProfile, 'wb')
