@@ -252,8 +252,6 @@ def loadProfile():
         lines = decrypt(byteFile.read())
         byteFile.close()
 
-        print(lines)
-
         for line in lines.splitlines():     # Splits the file by linefeed.
             # Splits each piece of information from a service by the special character.
             info = line.split(SEPCHAR)
