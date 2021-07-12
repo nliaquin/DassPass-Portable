@@ -292,33 +292,45 @@ def help(args):
               DassPass is developed by Nickolas Iaquinta. NLiaquin.xyz
 
               Lexicon
-              service or name - a website or application by its actual name, ie. steam, gmail, youtube, etc. Names can only be
-              lowercase when stored in the database, duplicate entries not allowed at this time.
+              service or name - a website or application by its actual
+              name, ie. steam, gmail, youtube, etc. Names can only be
+              lowercase when stored in the database, duplicate entries
+              not allowed at this time.
               user - the username to a service.
               pwd - the password to a service.
 
 
               Commands
-              add: takes a minimum of 2 arguments, at least requiring a service name and a username. You may specify a password,
-                but if you don't specify one, the program will automatically generate a strong password for you. If you specify a
-                password, you may also specify a note after.
-              usage - name user pwd(optinal) note(optional)
-              example - add youtube johndoe NJFjldanbl03 this is a note, it can contain any spaces or chracters, it does not matter
-              note - when using add, you must follow the order above in usage.
+              add: takes a minimum of 2 arguments, at least requiring
+              a service name and a username. You may specify a passwo-
+              rd, but if you don't specify one, the program will auto-
+              matically generate a strong password for you. If you sp-
+              ecify a password, you may also specify a note after.
+              usage - name user pwd(optional) note(optional)
+              example - add youtube johndoe NJFjldanbl03 this is a no-
+              te, it can contain any spaces or chracters, it does not
+              matter
+              note - when using add, you must follow the order above
+              in usage.
 
               remove: removes a given service by name.
               usage - remove name
               example - remove youtube
-              note - remove gets rid of entire services, not just a data member of a service.
+              note - remove gets rid of entire services, not just a da-
+              ta member of a service.
 
-              set: allows you to change or add information to a service, including changing the name of a service, changing the
-                user of a service, changing the pwd of a service, and adding or changing the note of a service.
+              set: allows you to change or add information to a servic-
+              e, including changing the name of a service, changing the
+              user of a service, changing the pwd of a service, and ad-
+              ding or changing the note of a service.
               usage - set name user 'username'
               ex 2 - set name name 'service name'
               ex 3 - set name pwd 'password'
               ex 4 - set name note 'note'
-              example - set youtube user bobby12 (changes the username to bobby12)
-              example 2 - set youtube pwd GDFHKSBjfkjads233 (changes the password)
+              example - set youtube user bobby12 (changes the username
+              to bobby12)
+              example 2 - set youtube pwd GDFHKSBjfkjads233 (changes
+              the password)
               example 3 - set youtube note this is a note
               note - setting new information overwrites old information.
 
@@ -326,37 +338,57 @@ def help(args):
               usage - get name user
               ex 2 - get name pwd
               ex 3 - get name note
-              example - get youtube pwd (copies the password to the clipboard)
-              example 2 - get youtube note (copies the note to the clipboard)
-              example 3 - get youtube (prints out all information about a service)
-              note - the last example prints all info to the terminal instead of copying specific information to the clipboard like
-                the first two examples do. When printing info rather than copying, the incognito var will determine whether info is
-                printed partially censored or clear text. Learn more about toggling incognito below.
+              example - get youtube pwd (copies the password to the cl-
+              ipboard)
+              example 2 - get youtube note (copies the note to the cli-
+              pboard)
+              example 3 - get youtube (prints out all information abou-
+              t a service)
+              note - the last example prints all info to the terminal 
+              instead of copying specific information to the clipboard
+              like the first two examples do. When printing info rather
+              than copying, the incognito var will determine whether 
+              info is printed partially censored or clear text. Learn
+              more about toggling incognito below.
 
-              genpass: generates a strong new password for a given service.
+              genpass: generates a strong new password for a given ser-
+              vice.
               usage - genpass name
-              example - genpass youtube (generates a strong new password for youtube, overwriting the old one.)
-              note - be sure to log into the service and get ready to change the password first before overwriting and losing your old password.
+              example - genpass youtube (generates a strong new passwo-
+              rd for youtube, overwriting the old one.)
+              note - be sure to log into the service and get ready to
+              change the password first before overwriting and losing
+              your old password.
 
-              cleanse: if you're noticing that you're pasting any items copied from the program with an extra space at the end, call this command to cleanse the end of every single service field.
+              cleanse: if you're noticing that you're pasting any items
+              copied from the program with an extra space at the end, 
+              call this command to cleanse the end of every single ser-
+              vice field.
               usage - cleanse
               example - cleanse
-              note - all this does is removes the last character from your name, user, password, or note of each service if one is found.
+              note - all this does is removes the last character from
+              your name, user, password, or note of each service if one
+              is found.
 
-              incognito: allows toggling of censorship when printing an entire service.
+              incognito: allows toggling of censorship when printing an
+              entire service.
               usage - incognito off (turns off incognito)
               ex 2 - incognito on (turns on incognito)
-              note: incognito only censors passwords partially, revealing last four digits.
+              note: incognito only censors passwords partially, reveal-
+              ing last four digits.
 
               list: lists all service names in your profile.
               usage - list
-              note - only the names of services next to an index (not hardcoded, just for counting services) of the service.
+              note - only the names of services next to an index (not 
+              hardcoded, just for counting services) of the service.
 
-              clear: clears the interface of all information, works exactly like terminal clear.
+              clear: clears the interface of all information, works ex-
+              actly like terminal clear.
               usage - clear
               note - clear is automatically called when using exit.
 
-              exit: exits DassPass Portable, clearing out any data related to the program from immediate memory.
+              exit: exits DassPass Portable, clearing out any data rel-
+              ated to the program from immediate memory.
               usage - exit
               note - ctrl+c will call exit.
               """)
